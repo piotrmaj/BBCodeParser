@@ -122,7 +122,7 @@ class BBCodeParser {
             var link = content;
 
             if (attr["url"] != undefined) {
-                link = escapeHTML(attr["url"]);
+                link = attr["url"];
             }
 
             if (!startsWith(link, "http://") && !startsWith(link, "https://")) {

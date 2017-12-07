@@ -49,6 +49,12 @@ class TestTokenizer extends tsUnit.TestClass {
         this.isTrue(new Token(TokenType.StartTag, "url").equals(tokens[0]));
         this.isTrue(new Token(TokenType.Text, "Google.se").equals(tokens[1]));
         this.isTrue(new Token(TokenType.EndTag, "url").equals(tokens[2]));
+        
+        tokens = tokenizer.tokenizeString("[url=\"http://google.se/search?q=google&oq=google\"]Google.se[/url]");
+        this.isTrue(new Token(TokenType.StartTag, "url").equals(tokens[0]));
+        this.isTrue("http://google.se/search?q=google&oq=google" === tokens[0].tagAttributes['url']);
+        this.isTrue(new Token(TokenType.Text, "Google.se").equals(tokens[1]));
+        this.isTrue(new Token(TokenType.EndTag, "url").equals(tokens[2]));
     }
 
     testBuildTree() {
@@ -137,6 +143,9 @@ class TestTokenizer extends tsUnit.TestClass {
         htmlStr = parser.parseString("[url=\"http://google.se\"]Google.se[/url]");
         this.areIdentical("<a href=\"http://google.se\" target=\"_blank\">Google.se</a>", htmlStr);
 
+        htmlStr = parser.parseString("[url url=\"http://google.se/search?q=google&oq=google\"]Google.se[/url]");
+        this.areIdentical("<a href=\"http://google.se/search?q=google&oq=google\" target=\"_blank\">Google.se</a>", htmlStr);
+
         //Test invalid
         htmlStr = parser.parseString("[b]test[]");
         this.areIdentical("[b]test[]", htmlStr);
@@ -168,7 +177,7 @@ class TestTokenizer extends tsUnit.TestClass {
     }
 
     testEscapingHtmlOption() {
-        var parser = new BBCodeParser(BBCodeParser.defaultTags());
+        var parser = new BBCodeParser(BBCodeParser.defaultTags(), { escapeHTML: true });
         var htmlStr = parser.parseString('[b]String[/b] with <a href="">html</a><br/>')
         this.areIdentical('<b>String</b> with &lt;a href=""&gt;html&lt;/a&gt;&lt;br/&gt;', htmlStr);
 
